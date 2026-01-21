@@ -21,4 +21,4 @@ docker container commit \
     ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${next_tag}
 
 # Update vars.bash. Format 'IMAGE_TAG="1"' Replace the number.
-sed -i "s/IMAGE_TAG=\".*\"/IMAGE_TAG=\"${next_tag}\"/g" ${docker_dir}/../vars.bash
+sed -i "s/IMAGE_TAG=\".*\"/IMAGE_TAG=\"${next_tag}\"/g" ${docker_dir}/vars.bash

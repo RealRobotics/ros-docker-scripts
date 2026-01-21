@@ -41,9 +41,12 @@ else
         --detach \
         --tty \
         --net=host \
-        --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
+        --name=${CONTAINER_NAME} \
+        --volume=${WORKSPACE_DIR}:/home/ubuntu/ws \
         --env="DISPLAY=$DISPLAY" \
+        --env=ROS_DOMAIN_ID \
+        -v /dev/input:/dev/input \
+        --device-cgroup-rule='c 13:* rmw' \
         --env="QT_X11_NO_MITSHM=1" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
         --env="XAUTHORITY=$XAUTH" \

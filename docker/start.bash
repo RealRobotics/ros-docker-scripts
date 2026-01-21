@@ -6,7 +6,6 @@ docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
 . ${docker_dir}/vars.bash
 
 mkdir -p ${WORKSPACE_DIR}
-cp ${docker_dir}/vars.bash ${WORKSPACE_DIR}
 
 docker container inspect ${CONTAINER_NAME} &> /dev/null
 if [ $? == 0 ]
@@ -27,13 +26,13 @@ else
         --detach \
         --tty \
         --net=host \
-        --env="DISPLAY=$DISPLAY" \
-        --env=ROS_DOMAIN_ID \
-        --device-cgroup-rule='c 13:* rmw' \
-        -v /dev/input:/dev/input \
-        --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
         --name=${CONTAINER_NAME} \
         --volume=${WORKSPACE_DIR}:/home/ubuntu/ws \
+        --env="DISPLAY=$DISPLAY" \
+        --env=ROS_DOMAIN_ID \
+        -v /dev/input:/dev/input \
+        --device-cgroup-rule='c 13:* rmw' \
+        --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]
     then
