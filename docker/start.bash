@@ -28,12 +28,12 @@ else
         --tty \
         --net=host \
         --env="DISPLAY=$DISPLAY" \
-        --env ROS_DOMAIN_ID \
+        --env=ROS_DOMAIN_ID \
         --device-cgroup-rule='c 13:* rmw' \
         -v /dev/input:/dev/input \
         --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
-        --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
+        --name=${CONTAINER_NAME} \
+        --volume=${WORKSPACE_DIR}:/home/ubuntu/ws \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]
     then
