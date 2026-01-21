@@ -9,7 +9,6 @@ if [ "$( docker container inspect -f '{{.State.Status}}' ${CONTAINER_NAME} )" ==
 then
     # Container is running so stop it.
     docker stop ${CONTAINER_NAME} &> /dev/null
-    sudo rm -rf /tmp/.docker.xauth/
     echo "Docker '${CONTAINER_NAME}' stopped."
 else
     echo "Docker '${CONTAINER_NAME}' already stopped."

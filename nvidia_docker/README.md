@@ -22,10 +22,16 @@ You should see the latest version of docker running.
 
 ### Install and test the NVidia docker toolkit
 
-On your PC, install the NVidia container toolkit using the script:
+You need to have installed the NVidia drivers.  They can be installed using the command:
 
-```text
-./nvidia_docker/install_nvidia_container_toolkit.bash
+```bash
+sudo ubuntu-drivers install
+```
+
+Select the latest version fo the NVidia drivers and install and test using:
+
+```bash
+nvidia-smi
 ```
 
 If all goes well, you should see something like this:
@@ -52,7 +58,13 @@ Thu Jul 28 08:11:03 2022
 +-----------------------------------------------------------------------------+
 ```
 
-If this is working, then it is time to build and run our docker.
+On your PC, install the NVidia container toolkit using the script:
+
+```text
+./nvidia_docker/install_nvidia_container_toolkit.bash
+```
+
+You should see the same `nvidia-smi` output text, this time from inside a docker container.  If this is working, then it is time to build and run our docker.
 
 ### Build and test our docker
 

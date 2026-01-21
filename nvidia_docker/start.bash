@@ -18,25 +18,11 @@ then
     else
         # Container exists but is not running.
         docker container start ${CONTAINER_NAME} &> /dev/null
-        echo "Container '${CONTAINER_NAME}' started."
+        echo "Container '${CONTAINER_NAME}' started but not running."
     fi
 else
     # Container does not exist.
     mkdir -p ${WORKSPACE_DIR}
-    # Setup X window for the container to use.
-    XAUTH=/tmp/.docker.xauth
-    if [ ! -f $XAUTH ]
-    then
-        xauth_list=$(xauth nlist :0 | sed -e 's/^..../ffff/')
-        if [ ! -z "$xauth_list" ]
-        then
-            echo $xauth_list | xauth -f $XAUTH nmerge -
-        else
-            touch $XAUTH
-        fi
-        chmod a+r $XAUTH
-    fi
-
     docker container run \
         --detach \
         --tty \
@@ -47,12 +33,8 @@ else
         --env=ROS_DOMAIN_ID \
         -v /dev/input:/dev/input \
         --device-cgroup-rule='c 13:* rmw' \
-        --env="QT_X11_NO_MITSHM=1" \
-        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-        --env="XAUTHORITY=$XAUTH" \
-        --volume="$XAUTH:$XAUTH" \
         --gpus all \
-        ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
+        ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG}
     if [ $? == 0 ]
     then
         echo "Container '${CONTAINER_NAME}' running."

@@ -15,7 +15,7 @@ curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dear
 
 # Install the NVIDIA Container Toolkit packages
 sudo apt update
-export NVIDIA_CONTAINER_TOOLKIT_VERSION=1.18.1-1
+export NVIDIA_CONTAINER_TOOLKIT_VERSION=1.18.0-1
   sudo apt install -y \
       nvidia-container-toolkit=${NVIDIA_CONTAINER_TOOLKIT_VERSION} \
       nvidia-container-toolkit-base=${NVIDIA_CONTAINER_TOOLKIT_VERSION} \
@@ -34,5 +34,5 @@ echo
 sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
 
 echo
-echo "Did you see the NVIDA-SMI output with version numbers?"
+echo "Did you see the NVIDIA-SMI output with version numbers?"
 echo "If so, you're done.  If not, Google is your friend!"

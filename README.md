@@ -12,6 +12,8 @@ The scripts create a standard base container for a release of ROS.  The versions
 | Ubuntu | Noble Numbat |
 | ROS | Kilted Kaiju |
 | Docker | 29.1.5 |
+| NVidia driver | 580 |
+| CUDA | 13.0 |
 
 If you want to use these scripts for your own project, just include this repo in your top level project repo, create your own branch and change as needed.
 
