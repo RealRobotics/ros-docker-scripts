@@ -5,8 +5,8 @@ FROM ros:kilted-perception-noble
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install basic tools.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apt update \
+    && apt install -y --no-install-recommends \
         sudo \
         vim \
         nano \
@@ -17,30 +17,26 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ROS2 desktop packages.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apt update \
+    && apt install -y --no-install-recommends \
         ros-kilted-desktop \
         python3-vcstool \
     && rm -rf /var/lib/apt/lists/*
 
-# Create user with UID and GID matching those on my PC.
-# This allows the user to delete build products created in the source tree.
-# Also add user ubuntu to sudoers list.
+# User ubuntu is created in the base image.
+# Add user ubuntu to sudoers list.
 RUN mkdir -p /etc/sudoers.d/ && \
     echo "ubuntu ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/ubuntu && \
     chmod 0440 /etc/sudoers.d/ubuntu
 
-ENV HOME=/home/ubuntu
-
-# Source ROS2 setup script for each shell.
-RUN echo ". /opt/ros/kilted/setup.bash" > /home/ubuntu/.bash_aliases
-
-# Change ownership of build directory to build:build.
-RUN chown -R ubuntu:ubuntu /home/ubuntu/
+# Source ROS2 setup script for each shell and vcstool auto complete.
+RUN echo ". /opt/ros/kilted/setup.bash" > /home/ubuntu/.bash_aliases && \
+    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/ubuntu/.bash_aliases
 
 # Use display
 ENV DISPLAY=:1.0
 
 # Change to user ubuntu.
+ENV HOME=/home/ubuntu
 USER ubuntu
 WORKDIR /home/ubuntu/ws
