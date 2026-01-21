@@ -1,52 +1,36 @@
 #!/bin/bash
-# From: https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository
+# From: https://docs.docker.com/engine/install/ubuntu/
 
 set -e
 
 echo "If this script fails at any time, run the remaining commands from this file using copy and paste."
 
-# Update the apt package index:
-sudo apt-get update
+# Uninstall old versions.
+sudo apt remove $(dpkg --get-selections docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc | cut -f1) || true
 
-# Install packages to allow apt to use a repository over HTTPS:
-sudo apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
+# Add Docker's official GPG key:
+sudo apt update
+sudo apt install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-# Add Docker’s official GPG key:
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# Add the repository to Apt sources:
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
 
-# Verify that you now have the key with the fingerprint 9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88, by searching for the last 8 characters of the fingerprint.
-sudo apt-key fingerprint 0EBFCD88
+sudo apt update
 
-#pub   4096R/0EBFCD88 2017-02-22
-#      Key fingerprint = 9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88
-#uid                  Docker Release (CE deb) <docker@docker.com>
-#sub   4096R/F273FCD8 2017-02-22
-
-#Use the following command to set up the stable repository. You always need the stable repository, even if you want to install builds from the edge or test repositories as well. To add the edge or test repository, add the word edge or test (or both) after the word stable in the commands below.
-# Note: The lsb_release -cs sub-command below returns the name of your Ubuntu distribution, such as xenial. Sometimes, in a distribution like Linux Mint, you might need to change $(lsb_release -cs) to your parent Ubuntu distribution. For example, if you are using Linux Mint Rafaela, you could use trusty.
-#x86_64 / amd64
-#armhf
-#IBM Power (ppc64le)
-#IBM Z (s390x)
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-
-
-# Update the apt package index:
-sudo apt-get update
-
-# Install the latest version of Docker CE.
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+# Install latest versions of Docker Engine and containerd
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Add the current user to the docker group
-sudo groupadd docker
-sudo usermod -aG docker ${USER}
+sudo groupadd docker || true
+sudo usermod -aG docker ${USER} || true
 
 echo "Please log out and log in again to use docker as yourself (not sudo)."
