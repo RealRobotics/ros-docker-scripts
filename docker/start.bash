@@ -3,12 +3,10 @@
 # set -x
 
 docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
-. ${docker_dir}/../vars.bash
+. ${docker_dir}/vars.bash
 
 mkdir -p ${WORKSPACE_DIR}
-cp ${docker_dir}/../setup/*.bash ${WORKSPACE_DIR}
-cp -r ${docker_dir}/../release ${WORKSPACE_DIR}
-cp ${docker_dir}/../vars.bash ${WORKSPACE_DIR}
+cp ${docker_dir}/vars.bash ${WORKSPACE_DIR}
 
 docker container inspect ${CONTAINER_NAME} &> /dev/null
 if [ $? == 0 ]

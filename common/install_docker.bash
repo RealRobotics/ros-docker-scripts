@@ -33,4 +33,8 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 sudo groupadd docker || true
 sudo usermod -aG docker ${USER} || true
 
+# Enable docker to start on boot
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+
 echo "Please log out and log in again to use docker as yourself (not sudo)."

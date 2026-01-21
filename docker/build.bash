@@ -4,7 +4,7 @@
 # set -x
 
 docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
-. ${docker_dir}/../vars.bash
+. ${docker_dir}/vars.bash
 
 docker inspect --type=image ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG}  &> /dev/null
 if [ $? == 1 ]
