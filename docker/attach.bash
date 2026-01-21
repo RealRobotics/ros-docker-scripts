@@ -8,6 +8,6 @@ docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
 
 docker exec \
     -it \
-    --user build \
-    --workdir /home/build/ws \
     ${CONTAINER_NAME} /bin/bash
+    # --user build \
+    # --workdir /home/ubuntu/ws \

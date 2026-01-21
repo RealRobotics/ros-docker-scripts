@@ -42,7 +42,7 @@ else
         --tty \
         --net=host \
         --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/build/ws \
+        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
         --env="DISPLAY=$DISPLAY" \
         --env="QT_X11_NO_MITSHM=1" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
