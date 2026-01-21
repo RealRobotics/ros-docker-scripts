@@ -8,6 +8,18 @@ __IMPORTANT NOTE: Running this docker requires an NVidia graphics card with 4GB 
 
 The docker image is setup for NVidia only and uses the `nvidia-docker2` software.
 
+### Install docker
+
+If you have't already installed it, follow these instructions.
+
+```bash
+cd common
+./install_docker.bash
+docker --version
+```
+
+You should see the latest version of docker running.
+
 ### Install and test the NVidia docker toolkit
 
 On your PC, install the NVidia container toolkit using the script:

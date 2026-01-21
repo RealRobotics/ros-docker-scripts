@@ -12,16 +12,18 @@ as well as a to install the docker tools.
 If you don't already have docker, install it using:
 
 ```bash
-cd docker
+cd common
 ./install_docker.bash
 docker --version
 ```
+
+You should see the latest version of docker running.
 
 Now build the docker image.
 
 ```bash
 cd docker
-./build.bash
+./ubuntu.bash
 ```
 
 This creates the docker image.  Do this just once!
@@ -41,30 +43,30 @@ cd docker
 ./attach.bash
 ```
 
-You should see a prompt starting with `build@`, e.g.
+You should see a prompt starting with `ubuntu@`, e.g.
 
 ```bash
-build@andy-Precision-7510:~
+ubuntu@andy-Precision-7510:~
 ```
 
 The `./attach.bash` script can be used multiple times on the same docker
 container, so that you can run a server in one shell and a client in another
 shell.
 
-When you are in the docker shell, the user is `build`.  Finally, change
+When you are in the docker shell, the user is `ubuntu`.  Finally, change
 directory into your workspace and check that the `.bash` scripts shown below
 are present.
 
 ```bash
-build@andy-Precision-7510:~$ cd ws
-build@andy-Precision-7510:~/ws$ ls
+ubuntu@andy-Precision-7510:~$ cd ws
+ubuntu@andy-Precision-7510:~/ws$ ls
 pipebot_repo.bash  setup_all.bash  setup_ros2_examples.bash  setup_test_template.bash  theme_3.bash  theme_n.bash  vars.bash
 ```
 
 When you have finished using your shell, simply type `exit`.
 
 ```bash
-build@andy-Precision-7510:~/ws$ exit
+ubuntu@andy-Precision-7510:~/ws$ exit
 exit
 ```
 
