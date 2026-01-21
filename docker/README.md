@@ -17,8 +17,6 @@ cd docker
 docker --version
 ```
 
-The current version of docker is 20.10.2.
-
 Now build the docker image.
 
 ```bash
