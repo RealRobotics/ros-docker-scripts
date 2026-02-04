@@ -34,7 +34,7 @@ else
         -v /dev/input:/dev/input \
         --device-cgroup-rule='c 13:* rmw' \
         --gpus all \
-        ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG}
+        ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]
     then
         echo "Container '${CONTAINER_NAME}' running."

@@ -1,4 +1,5 @@
-# Use this to build and run the Micro-ROS agent.
+# Use this to build and run a basic ROS2 Kilted desktop container.
+# It is based on the kilted-perception-noble image and adds ROS2 desktop
 
 FROM ros:kilted-perception-noble
 
