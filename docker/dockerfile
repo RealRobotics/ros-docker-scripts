@@ -5,9 +5,16 @@ FROM ros:kilted-perception-noble
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# User ubuntu is created in the base image using GID and UID 1000, but we allow overriding these values with build arguments to match the host user and avoid permission issues when sharing files between the container and the host.
+ARG UNAME=ubuntu
+
+# Customise the user and group name and IDs to match the host user to avoid permission issues when sharing files between the container and the host.
+ARG UID=1000
+ARG GID=1000
+
 # Install basic tools.
-RUN apt update \
-    && apt install -y --no-install-recommends \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
         sudo \
         vim \
         nano \
@@ -18,26 +25,29 @@ RUN apt update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ROS2 desktop packages.
-RUN apt update \
-    && apt install -y --no-install-recommends \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
         ros-kilted-desktop \
         python3-vcstool \
     && rm -rf /var/lib/apt/lists/*
 
-# User ubuntu is created in the base image.
 # Add user ubuntu to sudoers list.
 RUN mkdir -p /etc/sudoers.d/ && \
-    echo "ubuntu ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/ubuntu && \
-    chmod 0440 /etc/sudoers.d/ubuntu
+    echo "$UNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$UNAME && \
+    chmod 0440 /etc/sudoers.d/$UNAME
 
 # Source ROS2 setup script for each shell and vcstool auto complete.
-RUN echo ". /opt/ros/kilted/setup.bash" > /home/ubuntu/.bash_aliases && \
-    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/ubuntu/.bash_aliases
+RUN echo ". /opt/ros/kilted/setup.bash" > /home/$UNAME/.bash_aliases && \
+    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
 
 # Use display
 ENV DISPLAY=:1.0
 
+# Add user and group with the same UID and GID as the host.
+RUN groupadd -g $GID -o $UNAME
+RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
+
 # Change to user ubuntu.
-ENV HOME=/home/ubuntu
-USER ubuntu
-WORKDIR /home/ubuntu/ws
+ENV HOME=/home/$UNAME
+USER $UNAME
+WORKDIR /home/$UNAME/ws

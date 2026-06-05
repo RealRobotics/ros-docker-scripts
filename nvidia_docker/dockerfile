@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install NVidia runtime. Copied from:
 # https://gitlab.com/nvidia/container-images/cuda/-/blob/master/dist/13.0.2/ubuntu2404/base/Dockerfile
-# NOTE: This vesion was used as the NVidia drivers on the host use CUDA 13.0.
+# NOTE: This version was used as the NVidia drivers on the host use CUDA 13.0.
 
 ENV NVARCH=x86_64
 
@@ -54,6 +54,13 @@ RUN apt-get update \
         gdb \
         less \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Qt packages for rqt. This is a workaround for the following error when running rqt:
+# qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+# Aborted (core dumped)
+
+RUN apt-get install -y --no-install-recommends \
+    qtcreator qtbase5-dev qt5-qmake cmake
 
 # Install ROS2 desktop packages.
 RUN apt-get update \

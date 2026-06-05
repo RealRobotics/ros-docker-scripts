@@ -33,6 +33,7 @@ else
         --env=ROS_DOMAIN_ID \
         -v /dev/input:/dev/input \
         --device-cgroup-rule='c 13:* rmw' \
+        --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
         --gpus all \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]
