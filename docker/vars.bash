@@ -5,7 +5,7 @@ IMAGE_NAME="ros2-jazzy"
 IMAGE_TAG="1"
 CONTAINER_NAME="ros2_jazzy_container"
 # Change this if you want to build your code elsewhere on the host.
-WORKSPACE_DIR=${HOME}/${IMAGE_NAME}_ws
+WORKSPACE_DIR=${HOME}/workspaces/ros2_jazzy_ws
 # DO NOT CHANGE DOCKER_WS_DIR.
 # This is the workspace directory inside the docker.
 DOCKER_WS_DIR=${HOME}/ws
