@@ -2,7 +2,7 @@
 
 FROM osrf/ros:jazzy-desktop
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # User ubuntu is created in the base image using GID and UID 1000, but we allow overriding these values with build arguments to match the host user and avoid permission issues when sharing files between the container and the host.
 ARG UNAME=ubuntu
@@ -36,9 +36,26 @@ RUN echo ". /opt/ros/kilted/setup.bash" > /home/$UNAME/.bash_aliases && \
 # Use display
 ENV DISPLAY=:1.0
 
-# Add user and group with the same UID and GID as the host.
-RUN groupadd -g $GID -o $UNAME
-RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
+# User and group debugging
+# ARG USER_DEBUG_BUST=0
+# # List users
+# RUN echo "=== /etc/passwd ===" && cat /etc/passwd
+# # List groups
+# RUN echo "=== /etc/group ===" && cat /etc/group
+
+# Base image already has user/group ubuntu (typically 1000:1000).
+# Update existing IDs to match the host, or create them if absent.
+RUN if getent group "$UNAME" >/dev/null; then \
+        groupmod -g "$GID" "$UNAME"; \
+    else \
+        groupadd -g "$GID" -o "$UNAME"; \
+    fi && \
+    if id -u "$UNAME" >/dev/null 2>&1; then \
+        usermod -u "$UID" -g "$GID" -s /bin/bash "$UNAME"; \
+    else \
+        useradd -m -u "$UID" -g "$GID" -o -s /bin/bash "$UNAME"; \
+    fi && \
+    chown -R "$UID:$GID" /home/$UNAME
 
 # Change to user ubuntu.
 ENV HOME=/home/$UNAME

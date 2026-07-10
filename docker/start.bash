@@ -33,7 +33,7 @@ else
         -v /dev/input:/dev/input \
         --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
         --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/build/ws \
+        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]
     then
