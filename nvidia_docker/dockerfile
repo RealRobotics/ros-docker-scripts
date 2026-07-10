@@ -25,6 +25,7 @@ RUN apt-get update \
 # Install extra ROS2 packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-vcstool \
+        ros-${ROS2_DISTRO}-diagnostic-updater\
     && rm -rf /var/lib/apt/lists/*
 
 # Install Gazebo Harmonic via the ROS Jazzy metapackage.

@@ -2,6 +2,7 @@
 
 FROM osrf/ros:jazzy-desktop
 
+ENV ROS2_DISTRO=jazzy
 ENV DEBIAN_FRONTEND=noninteractive
 
 # User ubuntu is created in the base image using GID and UID 1000, but we allow overriding these values with build arguments to match the host user and avoid permission issues when sharing files between the container and the host.
@@ -26,6 +27,7 @@ RUN apt-get update \
 # Install extra ROS2 packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-vcstool \
+        ros-${ROS2_DISTRO}-diagnostic-updater\
     && rm -rf /var/lib/apt/lists/*
 
 # Add user ubuntu to sudoers list.
