@@ -59,6 +59,8 @@ RUN apt-get update \
 # qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
 # Aborted (core dumped)
 
+RUN add-apt-repository universe && apt-get update
+
 RUN apt-get install -y --no-install-recommends \
     qtcreator qtbase5-dev qt5-qmake cmake
 
