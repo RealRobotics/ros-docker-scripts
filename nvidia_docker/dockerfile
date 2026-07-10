@@ -1,16 +1,19 @@
 # Use this to build and run Gazebo 11 with micro-ROS.
 
-FROM ros:foxy-ros-base-focal
+FROM osrf/ros:jazzy-desktop
 
-ENV ROS2_DISTRO=foxy
+ENV ROS2_DISTRO=jazzy
+ENV DEBIAN_FRONTEND=noninteractive
 
-ENV DEBIAN_FRONTEND noninteractive
+# Keep the container username stable but allow host UID/GID mapping.
+ARG UNAME=build
+ARG UID=1000
+ARG GID=1000
 
 # Install basic tools.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         sudo \
-        ccache \
         vim \
         nano \
         wget \
@@ -19,76 +22,46 @@ RUN apt-get update \
         less \
     && rm -rf /var/lib/apt/lists/*
 
-# Setup links for ccache
-RUN cd /usr/local/bin/ \
-    && ln -s ccache gcc && ln -s ccache g++ \
-    && ln -s ccache cc && ln -s ccache c++
-
-# Install ROS2 packages.
+# Install extra ROS2 packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        ros-foxy-desktop=0.9.2-1* \
         python3-vcstool \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Gazebo packages.
-RUN wget http://packages.osrfoundation.org/gazebo.key && apt-key add gazebo.key
-RUN echo "deb [arch=amd64] http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -sc` main" > /etc/apt/sources.list.d/gazebo-stable.list
+# Install Gazebo Harmonic via the ROS Jazzy metapackage.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ros-${ROS2_DISTRO}-gazebo-dev \
-        ros-${ROS2_DISTRO}-gazebo-msgs \
-        ros-${ROS2_DISTRO}-gazebo-plugins \
-        ros-${ROS2_DISTRO}-gazebo-ros \
-        ros-${ROS2_DISTRO}-gazebo-ros-pkgs \
-        gazebo11 \
-        gazebo11-doc \
-        libgazebo11-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Add micro-ROS specific packages and an editor.
-# The packages were identified when running create_agent.sh.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        python3-pip \
-        libfl-dev libfl2 \
-        bison \
-        libncurses-dev libncurses5-dev \
-        usb.ids usbutils \
-        binfmt-support \
-        clang-10 clang-tidy-10 clang-tools-10 \
-        cpp-9 g++-9 gcc-10-base gcc-9 gcc-9-base lib32gcc-s1 \
-        lib32stdc++6 libasan5 libatomic1 libc6-i386 libcc1-0 \
-        libclang-common-10-dev libclang-cpp10 libgc1c2 \
-        libgcc-9-dev libgcc-s1 libgfortran5 libgomp1 libitm1 \
-        liblsan0 libobjc-9-dev libobjc4 libomp-10-dev libomp5-10 libpfm4 \
-        libpipeline1 libquadmath0 libstdc++-9-dev libstdc++6 libtsan0 \
-        libubsan1 libz3-4 libz3-dev llvm-10 llvm-10-dev llvm-10-runtime llvm-10-tools \
-        clang-tidy \
-        libasio-dev \
+        ros-${ROS2_DISTRO}-ros-gz \
     && rm -rf /var/lib/apt/lists/*
 
 # nvidia-container-runtime
-ENV NVIDIA_VISIBLE_DEVICES \
-    ${NVIDIA_VISIBLE_DEVICES:-all}
-ENV NVIDIA_DRIVER_CAPABILITIES \
-    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility,display,video,graphics
+ENV NVIDIA_REQUIRE_CUDA="cuda>=11.0 brand=tesla,driver>=450,driver<460"
 
-# Create user with UID and GID matching those on my PC.
-# This allows the user to delete build products created in the source tree.
-# Also add user build to sudoers list.
-RUN groupadd -g 1000 build && \
-    useradd -u 1000 -g 1000 -m -s /bin/bash build && \
+# Create/update user with UID and GID matching the host.
+# This allows deleting build products created in bind-mounted source trees.
+RUN if getent group "$UNAME" >/dev/null; then \
+        groupmod -g "$GID" "$UNAME"; \
+    else \
+        groupadd -g "$GID" -o "$UNAME"; \
+    fi && \
+    if id -u "$UNAME" >/dev/null 2>&1; then \
+        usermod -u "$UID" -g "$GID" -m -s /bin/bash "$UNAME"; \
+    else \
+        useradd -u "$UID" -g "$GID" -m -s /bin/bash "$UNAME"; \
+    fi && \
     mkdir -p /etc/sudoers.d/ && \
-    echo "build ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/build && \
-    chmod 0440 /etc/sudoers.d/build
-ENV HOME /home/build
+    echo "$UNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$UNAME && \
+    chmod 0440 /etc/sudoers.d/$UNAME
+
+ENV HOME=/home/$UNAME
 
 # Source ROS2 setup script for each shell and vcstool auto complete.
-RUN echo ". /opt/ros/foxy/setup.bash" > /home/build/.bash_aliases && \
-    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/build/.bash_aliases
+RUN echo ". /opt/ros/jazzy/setup.bash" > /home/$UNAME/.bash_aliases && \
+    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
 
-# Change ownership of build directory to build:build.
-RUN chown -R build:build /home/build/
+# Change ownership of home directory to match mapped UID/GID.
+RUN chown -R $UID:$GID /home/$UNAME/
 
-# Change to user build.
-USER build
+# Change to mapped user.
+USER $UNAME

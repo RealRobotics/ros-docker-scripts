@@ -11,7 +11,12 @@ docker inspect --type=image ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG}  
 if [ $? == 1 ]
 then
     set -e
+    HOST_UID=$(id -u)
+    HOST_GID=$(id -g)
+
     docker build \
+        --build-arg UID=${HOST_UID} \
+        --build-arg GID=${HOST_GID} \
         -t ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} \
         -f dockerfile \
         .
