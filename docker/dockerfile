@@ -4,11 +4,17 @@ FROM osrf/ros:jazzy-desktop
 
 ENV DEBIAN_FRONTEND noninteractive
 
+# User ubuntu is created in the base image using GID and UID 1000, but we allow overriding these values with build arguments to match the host user and avoid permission issues when sharing files between the container and the host.
+ARG UNAME=ubuntu
+
+# Customise the user and group name and IDs to match the host user to avoid permission issues when sharing files between the container and the host.
+ARG UID=1000
+ARG GID=1000
+
 # Install basic tools.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         sudo \
-        ccache \
         vim \
         nano \
         wget \
@@ -17,29 +23,24 @@ RUN apt-get update \
         less \
     && rm -rf /var/lib/apt/lists/*
 
-# Setup links for ccache.
-RUN cd /usr/local/bin/ \
-    && ln -s ccache gcc && ln -s ccache g++ \
-    && ln -s ccache cc && ln -s ccache c++
 
-# Create user with UID and GID matching those on my PC.
-# This allows the user to delete build products created in the source tree.
-# Also add user build to sudoers list.
-RUN groupadd -g 1000 build && \
-    useradd -u 1000 -g 1000 -m -s /bin/bash build && \
-    mkdir -p /etc/sudoers.d/ && \
-    echo "build ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/build && \
-    chmod 0440 /etc/sudoers.d/build
-ENV HOME /home/build
+# Add user ubuntu to sudoers list.
+RUN mkdir -p /etc/sudoers.d/ && \
+    echo "$UNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$UNAME && \
+    chmod 0440 /etc/sudoers.d/$UNAME
 
-# Source ROS2 setup script for each shell.
-RUN echo ". /opt/ros/jazzy/setup.bash" > /home/build/.bash_aliases
-
-# Change ownership of build directory to build:build.
-RUN chown -R build:build /home/build/
+# Source ROS2 setup script for each shell and vcstool auto complete.
+RUN echo ". /opt/ros/kilted/setup.bash" > /home/$UNAME/.bash_aliases && \
+    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
 
 # Use display
-ENV DISPLAY :1.0
+ENV DISPLAY=:1.0
 
-# Change to user build.
-USER build
+# Add user and group with the same UID and GID as the host.
+RUN groupadd -g $GID -o $UNAME
+RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
+
+# Change to user ubuntu.
+ENV HOME=/home/$UNAME
+USER $UNAME
+WORKDIR /home/$UNAME/ws
