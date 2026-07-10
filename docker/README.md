@@ -28,6 +28,10 @@ cd docker
 
 This creates the docker image.  Do this just once!
 
+The build script automatically passes your host UID and GID into the image build,
+so files created in the bind-mounted workspace can be edited and deleted by your
+host user without permission issues.
+
 Then start a docker container using the image that we have just built.
 
 ```bash

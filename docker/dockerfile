@@ -23,6 +23,10 @@ RUN apt-get update \
         less \
     && rm -rf /var/lib/apt/lists/*
 
+# Install extra ROS2 packages.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3-vcstool \
+    && rm -rf /var/lib/apt/lists/*
 
 # Add user ubuntu to sudoers list.
 RUN mkdir -p /etc/sudoers.d/ && \
@@ -30,7 +34,7 @@ RUN mkdir -p /etc/sudoers.d/ && \
     chmod 0440 /etc/sudoers.d/$UNAME
 
 # Source ROS2 setup script for each shell and vcstool auto complete.
-RUN echo ". /opt/ros/kilted/setup.bash" > /home/$UNAME/.bash_aliases && \
+RUN echo ". /opt/ros/jazzy/setup.bash" > /home/$UNAME/.bash_aliases && \
     echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
 
 # Use display
