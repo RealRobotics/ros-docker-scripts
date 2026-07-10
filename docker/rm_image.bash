@@ -3,7 +3,7 @@
 # set -e
 
 docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
-. ${docker_dir}/../vars.bash
+. ${docker_dir}/vars.bash
 
 # Delete the image.
 image_tag="${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
