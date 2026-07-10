@@ -6,8 +6,6 @@ docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
 . ${docker_dir}/vars.bash
 
 mkdir -p ${WORKSPACE_DIR}
-cp -f ${docker_dir}/../setup/*.bash ${WORKSPACE_DIR}
-cp -f ${docker_dir}/../vars.bash ${WORKSPACE_DIR}
 
 docker container inspect ${CONTAINER_NAME} &> /dev/null
 if [ $? == 0 ]
@@ -25,6 +23,7 @@ then
 else
     # Container does not exist.
     mkdir -p ${WORKSPACE_DIR}
+    XDG_RUNTIME_DIR=/tmp/runtime-build
     # Setup X window for the container to use.
     XAUTH=/tmp/.docker.xauth
     if [ ! -f $XAUTH ]
@@ -46,10 +45,12 @@ else
         --name ${CONTAINER_NAME} \
         --volume ${WORKSPACE_DIR}:/home/build/ws \
         --env="DISPLAY=$DISPLAY" \
+        --env="XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
         --env="QT_X11_NO_MITSHM=1" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
         --env="XAUTHORITY=$XAUTH" \
         --volume="$XAUTH:$XAUTH" \
+        --tmpfs "$XDG_RUNTIME_DIR:mode=700" \
         --gpus all \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]

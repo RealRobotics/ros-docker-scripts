@@ -61,6 +61,8 @@ At this point, you should be in a terminal shell attached to the docker.  Start 
 
 If this is working, then you are ready to use Gazebo.
 
+If `gz sim` reports Mesa or `iris` warnings but the simulator window opens and renders correctly, those warnings can usually be ignored.  The `start.bash` script sets `XDG_RUNTIME_DIR` for the container to avoid the common Qt runtime warning.  A quick GPU sanity check is to run `nvidia-smi` on the host before starting the container and confirm that Gazebo opens with normal rendering performance.
+
 ## Day to day usage
 
 To start the container, use `./start.bash` which script starts the container and leaves it running until `./stop.bash` is called.  It also copies any scripts from the `~/setup` directory into the workspace directory to allow the user to setup the workspace.
