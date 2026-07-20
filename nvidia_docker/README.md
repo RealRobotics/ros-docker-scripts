@@ -4,6 +4,8 @@ The files in this directory provides the user with a method to quickly build and
 
 __IMPORTANT NOTE: Running this docker requires an NVidia graphics card with 4GB RAM or more.__
 
+__Designed to work with Wayland (Ubuntu 26.04LTS onwards).__
+
 ## Getting started
 
 The docker image is setup for NVidia only and uses the `nvidia-docker2` software.
