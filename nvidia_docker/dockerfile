@@ -38,8 +38,7 @@ RUN apt-get update \
 
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility,display,video,graphics
-ENV NVIDIA_REQUIRE_CUDA="cuda>=11.0 brand=tesla,driver>=450,driver<460"
+ENV NVIDIA_DRIVER_CAPABILITIES=graphics,display,compute,utility
 
 # Add user ubuntu to sudoers list.
 RUN mkdir -p /etc/sudoers.d/ && \

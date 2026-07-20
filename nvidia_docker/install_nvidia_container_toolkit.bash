@@ -1,5 +1,9 @@
 #! /bin/dash
 
+#  Fix the Host NVIDIA Container Toolkit.
+sudo nvidia-ctk runtime configure --runtime=docker --set-as-default
+sudo systemctl restart docker
+
 # Install the nvidia-docker2 package and dependencies.
 sudo apt-get update
 sudo apt-get install -y nvidia-docker2

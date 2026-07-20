@@ -7,6 +7,9 @@ docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
 
 mkdir -p ${WORKSPACE_DIR}
 
+# Authorize the local container to access the display server.
+xhost +local:docker
+
 docker container inspect ${CONTAINER_NAME} &> /dev/null
 if [ $? == 0 ]
 then
@@ -42,16 +45,17 @@ else
         --detach \
         --tty \
         --net=host \
+        --ipc=host \
         --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/build/ws \
-        --env="DISPLAY=$DISPLAY" \
-        --env="XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
-        --env="QT_X11_NO_MITSHM=1" \
         --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-        --env="XAUTHORITY=$XAUTH" \
-        --volume="$XAUTH:$XAUTH" \
-        --tmpfs "$XDG_RUNTIME_DIR:mode=700" \
         --gpus all \
+        -e DISPLAY=$DISPLAY \
+        -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+        -v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:/tmp/wayland-0 \
+        -e WAYLAND_DISPLAY=wayland-0 \
+        -e XDG_RUNTIME_DIR=/tmp \
+        -e __NV_PRIME_RENDER_OFFLOAD=1 \
+        -e __GLX_VENDOR_LIBRARY_NAME=nvidia \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]
     then
