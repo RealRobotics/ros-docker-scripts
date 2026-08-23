@@ -1,11 +1,8 @@
 # Docker
 
-[Back to top](../README.md)
+[Back to top](../README) | [GPU-accelerated version](../nvidia_docker/README.md)
 
-This directory provides the user with a method to quickly build the ROS2
-projects in a docker container.  Scripts are provided to
-create the docker image and to start, stop and attach to the docker container
-as well as a to install the docker tools.
+This directory provides scripts to quickly build and run ROS 2 projects in a standard Docker container. Scripts are provided to create the Docker image, start and stop containers, and attach terminal shells to running containers. Docker installation tools are also included.
 
 ## Basic operation
 
@@ -87,4 +84,4 @@ The `build.bash` script passes your host user id (UID) and group id (GID) into t
 
 The `start.bash` script creates the workspace directory in your home directory.  This directory is shared (bind mounted) with the docker where it appears as `~/ws`.
 
-If you want change where the workspace directory is created, change the value `WORKSPACE_DIR` in `vars.bash`, then stop and delete the current container using `./rm_container.bash` and then start a new container using `.start.bash`.
+If you want to change where the workspace directory is created, modify the `WORKSPACE_DIR` variable in `vars.bash`, then stop and delete the current container using `./rm_container.bash` and start a new container using `./start.bash`.

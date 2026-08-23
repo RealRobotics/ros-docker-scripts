@@ -1,6 +1,8 @@
-# Docker
+# NVIDIA GPU-Accelerated Docker
 
-This directory provides the user with a method to quickly build and test the simulation code in a docker container that also support hardware acceleration for NVIDIA GPUs.  Scripts are provided to create the docker image and to start, stop and attach to the docker container.
+[Back to top](../README) | [Standard Docker version](../docker/README.md)
+
+This directory provides scripts to build and run ROS 2 and Gazebo simulations in a Docker container with NVIDIA GPU hardware acceleration. Scripts are provided to create the Docker image, start and stop containers, and attach terminal shells to running containers.
 
 __IMPORTANT NOTE: Running this docker needs an NVIDIA graphics card with 4GB RAM or more that can run the CUDA 11.0 runtime or later.__
 
@@ -107,6 +109,6 @@ The new workspace directory should now be in use.  To test it, add a file using 
 
 ### Modifying the `dockerfile`
 
-If you need to update the `dockerfile`, you need to run `rm_image.bash` first to delete the docker image and then run `build.bash` to build the docker image again.
+If you need to update the `dockerfile`, first run `./rm_image.bash` to delete the Docker image, then run `./build.bash` to rebuild it.
 
-The `commit.bash` file allows you to commit changes made to the docker image.  Using this script is not recommended as this image cannot be rebuilt using the `dockerfile`.
+The `commit.bash` script allows you to commit changes made to the running container. Using this approach is not recommended because the resulting image cannot be rebuilt using the `dockerfile`.
