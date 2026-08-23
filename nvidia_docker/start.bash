@@ -26,9 +26,13 @@ then
 else
     # Container does not exist.
     mkdir -p ${WORKSPACE_DIR}
-    XDG_RUNTIME_DIR=/tmp/runtime-build
 
-    docker container run \
+    # Use host's XDG_RUNTIME_DIR for Wayland socket, or fall back to /tmp
+    HOST_XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/tmp}
+    WAYLAND_SOCKET_PATH="${HOST_XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}"
+
+    # Build the docker run command
+    DOCKER_RUN_CMD="docker container run \
         --detach \
         --tty \
         --net=host \
@@ -37,13 +41,22 @@ else
         --volume ${WORKSPACE_DIR}:${CONTAINER_HOME}/ws \
         --gpus all \
         -e DISPLAY=$DISPLAY \
-        -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
-        -v $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY:/tmp/wayland-0 \
+        -v /tmp/.X11-unix:/tmp/.X11-unix:rw"
+
+    # Only mount Wayland socket if it exists
+    if [ -S "$WAYLAND_SOCKET_PATH" ]; then
+        DOCKER_RUN_CMD="$DOCKER_RUN_CMD \
+        -v $WAYLAND_SOCKET_PATH:/tmp/wayland-0 \
         -e WAYLAND_DISPLAY=wayland-0 \
-        -e XDG_RUNTIME_DIR=/tmp \
+        -e XDG_RUNTIME_DIR=/tmp"
+    fi
+
+    DOCKER_RUN_CMD="$DOCKER_RUN_CMD \
         -e __NV_PRIME_RENDER_OFFLOAD=1 \
         -e __GLX_VENDOR_LIBRARY_NAME=nvidia \
-        ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
+        ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null"
+
+    eval "$DOCKER_RUN_CMD"
     if [ $? == 0 ]
     then
         echo "Container '${CONTAINER_NAME}' running."
