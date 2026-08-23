@@ -27,19 +27,6 @@ else
     # Container does not exist.
     mkdir -p ${WORKSPACE_DIR}
     XDG_RUNTIME_DIR=/tmp/runtime-build
-    # Setup X window for the container to use.
-    XAUTH=/tmp/.docker.xauth
-    if [ ! -f $XAUTH ]
-    then
-        xauth_list=$(xauth nlist :0 | sed -e 's/^..../ffff/')
-        if [ ! -z "$xauth_list" ]
-        then
-            echo $xauth_list | xauth -f $XAUTH nmerge -
-        else
-            touch $XAUTH
-        fi
-        chmod a+r $XAUTH
-    fi
 
     docker container run \
         --detach \
@@ -47,7 +34,7 @@ else
         --net=host \
         --ipc=host \
         --name ${CONTAINER_NAME} \
-        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
         --gpus all \
         -e DISPLAY=$DISPLAY \
         -v /tmp/.X11-unix:/tmp/.X11-unix:rw \

@@ -40,6 +40,10 @@ RUN apt-get update \
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=graphics,display,compute,utility
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libnvidia-egl-wayland1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Add user ubuntu to sudoers list.
 RUN mkdir -p /etc/sudoers.d/ && \
     echo "$UNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$UNAME && \
