@@ -8,7 +8,7 @@ docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
 mkdir -p ${WORKSPACE_DIR}
 
 # Authorize the local container to access the display server.
-xhost +local:docker
+command -v xhost >/dev/null 2>&1 && xhost +SI:localuser:$(id -un) >/dev/null
 
 docker container inspect ${CONTAINER_NAME} &> /dev/null
 if [ $? == 0 ]
@@ -34,7 +34,7 @@ else
         --net=host \
         --ipc=host \
         --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
+        --volume ${WORKSPACE_DIR}:${CONTAINER_HOME}/ws \
         --gpus all \
         -e DISPLAY=$DISPLAY \
         -v /tmp/.X11-unix:/tmp/.X11-unix:rw \

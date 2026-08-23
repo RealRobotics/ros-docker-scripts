@@ -1,20 +1,20 @@
 # Docker
 
-The files in this directory provides the user with a method to quickly build and test the simulation code in a docker container that also support hardware acceleration for NVidia GPUs.  Scripts are provided to create the docker image and to start, stop and attach to the docker container.
+This directory provides the user with a method to quickly build and test the simulation code in a docker container that also support hardware acceleration for NVIDIA GPUs.  Scripts are provided to create the docker image and to start, stop and attach to the docker container.
 
-__IMPORTANT NOTE: Running this docker requires an NVidia graphics card with 4GB RAM or more.__
+__IMPORTANT NOTE: Running this docker needs an NVIDIA graphics card with 4GB RAM or more that can run the CUDA 11.0 runtime or later.__
 
 __Designed to work with Wayland (Ubuntu 26.04LTS onwards).__
 
 ## Getting started
 
-The docker image is setup for NVidia only and uses the `nvidia-docker2` software.
+The docker image is setup for NVIDIA only.
 
-### Install and test the NVidia docker toolkit
+### Install and test the NVIDIA docker toolkit
 
-On your PC, install the NVidia container toolkit using the script:
+On your PC, install the NVIDIA container toolkit using the script:
 
-```text
+```bash
 ./nvidia_docker/install_nvidia_container_toolkit.bash
 ```
 
@@ -46,7 +46,7 @@ If this is working, then it is time to build and run our docker.
 
 ### Build and test our docker
 
-Run the script `./build.bash` to create our docker image.  This process took about 30 minutes on my PC, so get on with something else while the image is built.
+Run the script `./build.bash` to create our docker image.
 
 The build script automatically passes your host UID and GID into the image build,
 so files created in the bind-mounted workspace can be edited and deleted by your
@@ -59,17 +59,21 @@ When the build has completed, run the commands:
 ./attach.bash
 ```
 
-At this point, you should be in a terminal shell attached to the docker.  Start gazebo by typing `gazebo --verbose` and you should see gazebo start up.  I use the `--verbose` option so that I can see something happen on the terminal while Gazebo is loading.
+At this point, you should be in a terminal shell attached to the docker.  Inside the docker shell, the user is `ubuntu`, and the default directory is `~/ws` which is bind mounted to the workspace directory.
+
+When you have finished using your shell, simply type `exit`.
+
+ Start gazebo by typing `gazebo --verbose` and you should see gazebo start up.  I use the `--verbose` option so that I can see something happen on the terminal while Gazebo is loading.
 
 If this is working, then you are ready to use Gazebo.
 
-If `gz sim` reports Mesa or `iris` warnings but the simulator window opens and renders correctly, those warnings can usually be ignored.  The `start.bash` script sets `XDG_RUNTIME_DIR` for the container to avoid the common Qt runtime warning.  A quick GPU sanity check is to run `nvidia-smi` on the host before starting the container and confirm that Gazebo opens with normal rendering performance.
+ If `gz sim` reports Mesa or `iris` warnings but the simulator window opens and renders correctly, those warnings can usually be ignored. The `start.bash` script bind-mounts the host Wayland socket (from `$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY`, usually `wayland-0`) into the container and sets `WAYLAND_DISPLAY`/`XDG_RUNTIME_DIR` inside the container to reduce common Qt runtime warnings..
 
 ## Day to day usage
 
 To start the container, use `./start.bash` which script starts the container and leaves it running until `./stop.bash` is called.  It also copies any scripts from the `~/setup` directory into the workspace directory to allow the user to setup the workspace.
 
-After starting the container, you can get a Bash user prompt attached to the container using `./attach.bash`.  The command `source /opt/ros/foxy/setup.bash` is automatically run for each new terminal.
+After starting the container, you can get a Bash user prompt attached to the container using `./attach.bash`.  The command `source /opt/ros/${ROS_DISTRO}/setup.bash` is automatically run for each new terminal.
 
 To stop the container, use `./stop.bash`.
 
@@ -82,7 +86,7 @@ If you cannot start the docker for some reason, the following command sequence n
 ./attach.bash
 ```
 
-The `stop.bash` script deletes `/tmp/.docker.xauth/` that is used by the docker to communicate to the GPU.  `rm_container.bash` then deletes the container that may have been left in a strange state after a crash.  `start.bash` re-creates the container so it should all work again.
+The `stop.bash` script stops the running container.  `rm_container.bash` deletes the container, useful if you modify the `start.bash` script or if the container is behaving oddly.  `start.bash` re-creates the container so it should all work again.
 
 ## Advanced operations
 
@@ -100,3 +104,9 @@ To change the workspace directory, modify the `WORKSPACE_DIR` variable in `./var
 ```
 
 The new workspace directory should now be in use.  To test it, add a file using `touch` in the `~/ws` directory of the docker and check that it has appeared in the external directory.
+
+### Modifying the `dockerfile`
+
+If you need to update the `dockerfile`, you need to run `rm_image.bash` first to delete the docker image and then run `build.bash` to build the docker image again.
+
+The `commit.bash` file allows you to commit changes made to the docker image.  Using this script is not recommended as this image cannot be rebuilt using the `dockerfile`.

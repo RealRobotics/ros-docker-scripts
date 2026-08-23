@@ -31,9 +31,9 @@ else
         --env ROS_DOMAIN_ID \
         --device-cgroup-rule='c 13:* rmw' \
         -v /dev/input:/dev/input \
-        --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
+        --volume="$HOME/.Xauthority:${CONTAINER_HOME}/.Xauthority:rw" \
         --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
+        --volume ${WORKSPACE_DIR}:${CONTAINER_HOME}/ws \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]
     then
