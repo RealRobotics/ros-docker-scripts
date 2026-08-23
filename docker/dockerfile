@@ -1,8 +1,8 @@
-# Use this to build and run the Micro-ROS agent.
+# Use this to build ROS packages.
 
-FROM osrf/ros:jazzy-desktop
+FROM osrf/ros:lyrical-desktop
 
-ENV ROS2_DISTRO=jazzy
+ENV ROS_DISTRO=lyrical
 ENV DEBIAN_FRONTEND=noninteractive
 
 # User ubuntu is created in the base image using GID and UID 1000, but we allow overriding these values with build arguments to match the host user and avoid permission issues when sharing files between the container and the host.
@@ -27,7 +27,7 @@ RUN apt-get update \
 # Install extra ROS2 packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-vcstool \
-        ros-${ROS2_DISTRO}-diagnostic-updater\
+        ros-${ROS_DISTRO}-diagnostic-updater\
     && rm -rf /var/lib/apt/lists/*
 
 # Add user ubuntu to sudoers list.
@@ -36,7 +36,7 @@ RUN mkdir -p /etc/sudoers.d/ && \
     chmod 0440 /etc/sudoers.d/$UNAME
 
 # Source ROS2 setup script for each shell and vcstool auto complete.
-RUN echo ". /opt/ros/jazzy/setup.bash" > /home/$UNAME/.bash_aliases && \
+RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" > /home/$UNAME/.bash_aliases && \
     echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
 
 # Use display
