@@ -10,11 +10,18 @@ mkdir -p ${WORKSPACE_DIR}
 # Authorize the local container to access the display server.
 command -v xhost >/dev/null 2>&1 && xhost +SI:localuser:$(id -un) >/dev/null
 
-docker container inspect ${CONTAINER_NAME} &> /dev/null
-if [ $? == 0 ]
+CONTAINER_STATUS=$(docker container inspect -f '{{.State.Status}}' ${CONTAINER_NAME} 2>/dev/null)
+if [ "${CONTAINER_STATUS}" == "created" ]
 then
-    # Container exists.
-    if [ "$( docker container inspect -f '{{.State.Status}}' ${CONTAINER_NAME} )" == "running" ]
+    # A failed first start can leave stale runtime settings in a created container.
+    echo "Removing failed, never-started container '${CONTAINER_NAME}'."
+    docker container rm ${CONTAINER_NAME} &> /dev/null || exit 1
+    CONTAINER_STATUS=""
+fi
+
+if [ -n "${CONTAINER_STATUS}" ]
+then
+    if [ "${CONTAINER_STATUS}" == "running" ]
     then
         # Container is running.
         echo "Container '${CONTAINER_NAME}' is already running."
@@ -41,6 +48,7 @@ else
         --volume ${WORKSPACE_DIR}:${CONTAINER_HOME}/ws \
         --gpus all \
         -e DISPLAY=$DISPLAY \
+        -e QT_QPA_PLATFORM=xcb \
         -v /tmp/.X11-unix:/tmp/.X11-unix:rw"
 
     # Only mount Wayland socket if it exists
@@ -56,11 +64,16 @@ else
         -e __GLX_VENDOR_LIBRARY_NAME=nvidia \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null"
 
+    echo "Starting container '${CONTAINER_NAME}'..."
     eval "$DOCKER_RUN_CMD"
     if [ $? == 0 ]
     then
         echo "Container '${CONTAINER_NAME}' running."
     else
         echo "Container '${CONTAINER_NAME}' failed."
+        echo "To find out what went wrong, comment out the ' &> /dev/null' "
+        echo "at the end of the DOCKER_RUN_CMD.  Then run this script again "
+        echo "to see the full command that was executed along with any error "
+        echo "messages."
     fi
 fi

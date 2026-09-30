@@ -1,4 +1,13 @@
-#! /bin/dash
+#!/bin/dash
+
+# Check to see if the driver is installed.  If not, install it.
+if [ ! -x /usr/bin/nvidia-smi ]
+then
+    echo "NVIDIA driver not found.  Installing it now."
+    ./install_nvidia_driver.bash
+else
+    echo "NVIDIA driver found."
+fi
 
 #  Fix the Host NVIDIA Container Toolkit.
 sudo nvidia-ctk runtime configure --runtime=docker --set-as-default
