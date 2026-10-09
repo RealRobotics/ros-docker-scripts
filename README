@@ -10,7 +10,7 @@ This repository provides scripts to run Robot Operating System (ROS 2) in Docker
 
 ## Version Information
 
-This version supports **ROS 2 Lyrical** on **Ubuntu 26.04 LTS**. Older versions are available on other branches. Each directory includes a `README.md` file with detailed usage instructions.
+This version supports **ROS 2 Humble** on **Ubuntu 22.04LTS** running a **Ubuntu Wayland Host** (Ubuntu 26.04 LTS). Other versions are available on other branches. Each directory includes a `README.md` file with detailed usage instructions.
 
 ## Acknowledgments
 

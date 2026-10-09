@@ -1,8 +1,8 @@
 # Use this to build ROS packages.
 
-FROM osrf/ros:lyrical-desktop
+FROM osrf/ros:humble-desktop-full
 
-ENV ROS_DISTRO=lyrical
+ENV ROS_DISTRO=humble
 ENV DEBIAN_FRONTEND=noninteractive
 
 # User ubuntu is created in the base image using GID and UID 1000, but we allow overriding these values with build arguments to match the host user and avoid permission issues when sharing files between the container and the host.
@@ -35,10 +35,6 @@ RUN mkdir -p /etc/sudoers.d/ && \
     echo "$UNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$UNAME && \
     chmod 0440 /etc/sudoers.d/$UNAME
 
-# Source ROS2 setup script for each shell and vcstool auto complete.
-RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" > /home/$UNAME/.bash_aliases && \
-    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
-
 # Use display
 ENV DISPLAY=:1.0
 
@@ -67,3 +63,8 @@ RUN if getent group "$UNAME" >/dev/null; then \
 ENV HOME=/home/$UNAME
 USER $UNAME
 WORKDIR /home/$UNAME/ws
+
+# Source ROS2 setup script for each shell and vcstool auto complete.
+RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" > /home/$UNAME/.bash_aliases && \
+    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
+

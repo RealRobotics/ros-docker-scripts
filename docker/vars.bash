@@ -1,7 +1,7 @@
 # Variables for other scripts.
 
 DOCKER_HUB_USER_NAME="RealRobotics"
-IMAGE_NAME="rr_lyrical"
+IMAGE_NAME="rr_humble"
 IMAGE_TAG="1.0"
 CONTAINER_NAME=${IMAGE_NAME}_container
 CONTAINER_HOME=/home/ubuntu
