@@ -1,4 +1,4 @@
-# ROS docker scripts
+# ROS Docker scripts
 
 The repo houses scripts to run Robot Operating System (ROS) dockers.  There are several versions available:
 
