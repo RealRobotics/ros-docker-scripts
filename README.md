@@ -1,10 +1,10 @@
-# ros-docker-scripts
+# ROS docker scripts
 
 The repo houses scripts to run Robot Operating System (ROS) dockers.  There are several versions available:
 
 | Branch | Notes |
 |---|---|
-| main | Just this README and license file. |
+| main | Just this README and the LICENSE file. |
 | foxy | Built and tested using ROS Foxy and Ubuntu 22.04LTS. |
 | jazzy | Built and tested using ROS Jazzy and Ubuntu 24.04LTS. |
 | kilted | Built and tested using ROS Kilted and Ubuntu 24.04LTS. |
